@@ -1,5 +1,7 @@
 package kodlamaio.HRMS.entities.concretes;
 
+import java.time.LocalDate;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -24,10 +26,16 @@ public class Company {
 
 	@Column(name = "company_name")
 	private String companyName;
+	
 
-	public Company(String companyName) {
-		super();
-		this.companyName = companyName;
-	}
+	@Column(name= "created_at")
+	private LocalDate createdDate;
+	
+	@Column(name= "is_active")
+	private boolean isActive;
+	
+	@Column(name= "is_deleted")
+	private boolean isDeleted;
+
 
 }

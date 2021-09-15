@@ -6,6 +6,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import kodlamaio.HRMS.business.abstracts.JobSeekerService;
+import kodlamaio.HRMS.core.utilities.results.DataResult;
+import kodlamaio.HRMS.core.utilities.results.Result;
+import kodlamaio.HRMS.core.utilities.results.SuccessDataResult;
+import kodlamaio.HRMS.core.utilities.results.SuccessResult;
 import kodlamaio.HRMS.dataAccess.abstracts.JobSeekerDao;
 import kodlamaio.HRMS.entities.concretes.JobSeeker;
 
@@ -21,28 +25,37 @@ public class JobSeekerManager implements JobSeekerService{
 	}
 
 	@Override
-	public void add(JobSeeker jobSeeker) {
-		this.jobSeekerDao.save(jobSeeker);
+	public Result add(JobSeeker jobSeeker) {
+		 this.jobSeekerDao.save(jobSeeker);
+		 return new SuccessResult("Jobseeker has been added.")
+				;
 	}
 
 	@Override
-	public void update(JobSeeker jobSeeker) {
-		this.jobSeekerDao.save(jobSeeker);
+	public Result update(JobSeeker jobSeeker) {
+		 this.jobSeekerDao.save(jobSeeker);
+		 return new SuccessResult("Jobseeker has been updated.");
 	}
 
 	@Override
-	public void delete(int id) {
-		this.jobSeekerDao.deleteById(id);;
+	public Result delete(int id) {
+		this.jobSeekerDao.deleteById(id);
+		return new SuccessResult("Jobseeker has been deleted.");
 	}
 
 	@Override
-	public JobSeeker getById(int id) {
-		return this.jobSeekerDao.getOne(id);
+	public DataResult<JobSeeker> getById(int id) {
+		return new SuccessDataResult<JobSeeker>(this.jobSeekerDao.getOne(id));
 	}
 
 	@Override
-	public List<JobSeeker> getAll() {
-		return this.jobSeekerDao.findAll();
+	    public DataResult<JobSeeker> getJobSeekerByNationalId(String nationalId) {
+		return new SuccessDataResult<JobSeeker>(this.jobSeekerDao.findJobSeekerByNationalId(nationalId));
+	}
+
+	@Override
+	public DataResult<List<JobSeeker>> getAll() {
+		return new SuccessDataResult<List<JobSeeker>>(this.jobSeekerDao.findAll());
 	}
 
 }

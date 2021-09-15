@@ -1,13 +1,19 @@
 package kodlamaio.HRMS.entities.concretes;
 
+import java.time.LocalDate;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.PrimaryKeyJoinColumn;
 import javax.persistence.Table;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Entity
+@NoArgsConstructor
+@AllArgsConstructor
 @Table(name = "jobseekers")
 @Data
 @PrimaryKeyJoinColumn(name = "user_id")
@@ -25,22 +31,13 @@ public class JobSeeker extends User{
 	@Column(name= "last_name")
 	private String lastName;
 
-	@Column(name= "nationalId")
+	@Column(name= "national_id")
 	private String nationalId;
 
-	@Column(name= "year_of_birth")
-	private int yearOfBirth;
+	@Column(name= "date_of_birth")
+	private LocalDate dateOfBirth;
 
-	public JobSeeker() {
-
-	}
-
-	public JobSeeker(String firstName, String lastName, String nationalId, int yearOfBirth) {
-		super();
-		this.firstName = firstName;
-		this.lastName = lastName;
-		this.nationalId = nationalId;
-		this.yearOfBirth = yearOfBirth;
-	}
+	@Column(name = "is_verified", columnDefinition = "boolean default false")
+	private boolean isVerified = false;
 
 }

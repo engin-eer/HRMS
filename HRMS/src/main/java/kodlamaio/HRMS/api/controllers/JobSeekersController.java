@@ -11,43 +11,45 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import kodlamaio.HRMS.business.abstracts.JobSeekerService;
+import kodlamaio.HRMS.core.utilities.results.DataResult;
+import kodlamaio.HRMS.core.utilities.results.Result;
 import kodlamaio.HRMS.entities.concretes.JobSeeker;
 
 @RestController
 @RequestMapping("/api/jobseekers")
-public class JobseekersController {
+public class JobSeekersController {
 
 	private JobSeekerService jobSeekerService;
 
 	@Autowired
-	public JobseekersController(JobSeekerService jobSeekerService) {
+	public JobSeekersController(JobSeekerService jobSeekerService) {
 		super();
 		this.jobSeekerService = jobSeekerService;
 	}
 
 
 	@PostMapping("/add")
-	public void add(@RequestBody JobSeeker jobseeker){
-		this.jobSeekerService.add(jobseeker);
+	public Result add(@RequestBody JobSeeker jobSeeker){
+		return this.jobSeekerService.add(jobSeeker);
 	}
 
 	@PostMapping("/update")
-	public void update(@RequestBody JobSeeker jobSeeker){
-		this.jobSeekerService.update(jobSeeker);
+	public Result update(@RequestBody JobSeeker jobSeeker){
+		return this.jobSeekerService.update(jobSeeker);
 	}
 
 	@PostMapping("/delete")
-	public void delete(@PathVariable("id") int id){
-		this.jobSeekerService.delete(id);
+	public Result delete(@PathVariable("id") int id){
+		return this.jobSeekerService.delete(id);
 	}
 
 	@GetMapping("/getbyid")
-	public JobSeeker getById(@PathVariable("id") int id){
+	public DataResult<JobSeeker> getById(@PathVariable("id") int id){
 		return this.jobSeekerService.getById(id);
 	}
 
 	@GetMapping("/getall")
-	public List<JobSeeker> getAll(){
+	public DataResult<List<JobSeeker>> getAll(){
 		return this.jobSeekerService.getAll();
 	}
 

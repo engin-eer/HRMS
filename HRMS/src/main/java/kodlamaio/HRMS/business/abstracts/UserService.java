@@ -2,14 +2,16 @@ package kodlamaio.HRMS.business.abstracts;
 
 import java.util.List;
 
+import kodlamaio.HRMS.core.utilities.results.DataResult;
+import kodlamaio.HRMS.core.utilities.results.Result;
 import kodlamaio.HRMS.entities.concretes.User;
 
 public interface UserService {
 	
-	void add(User user);
-	void update(User user);
-	void delete(int id);
-	User getById(int id);
-	List<User> getAll();
-
+	Result add(User user);
+	Result update(User user);
+	Result delete(int id);
+	DataResult<User> getById(int id);
+	DataResult<List<User>> getAll();
+	DataResult<User> getUserByEmail(String email);
 }

@@ -5,12 +5,16 @@ import javax.persistence.Entity;
 import javax.persistence.PrimaryKeyJoinColumn;
 import javax.persistence.Table;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name = "employees")
 @Data
 @PrimaryKeyJoinColumn(name = "user_id")
+@AllArgsConstructor
+@NoArgsConstructor
 
 public class Employee extends User {
 //	@Id
@@ -26,16 +30,5 @@ public class Employee extends User {
 
 	@Column(name = "department_id")
 	private int departmentId;
-
-	public Employee() {
-
-	}
-
-	public Employee(String firstName, String lastName, int departmentId) {
-		super();
-		this.firstName = firstName;
-		this.lastName = lastName;
-		this.departmentId = departmentId;
-	}
 
 }

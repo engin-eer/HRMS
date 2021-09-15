@@ -1,15 +1,17 @@
-package kodlamaio.HRMS.business.abstracts;
+ package kodlamaio.HRMS.business.abstracts;
 
 import java.util.List;
 
+import kodlamaio.HRMS.core.utilities.results.DataResult;
+import kodlamaio.HRMS.core.utilities.results.Result;
 import kodlamaio.HRMS.entities.concretes.Employee;
 
 public interface EmployeeService {
 	
-	void add(Employee employee);
-	void update(Employee employee);
-	void delete(int id);
-	Employee getById(int id);
-	List<Employee> getAll();
+	Result add(Employee employee);
+	Result update(Employee employee);
+	Result delete(int id);
+	DataResult<Employee> getById(int id);
+	DataResult<List<Employee>> getAll();
 
 }
