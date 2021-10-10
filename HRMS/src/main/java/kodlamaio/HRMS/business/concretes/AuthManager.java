@@ -1,5 +1,7 @@
 package kodlamaio.HRMS.business.concretes;
 
+import java.time.LocalDate;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -7,6 +9,7 @@ import kodlamaio.HRMS.business.abstracts.AuthService;
 import kodlamaio.HRMS.business.abstracts.EmployerService;
 import kodlamaio.HRMS.business.abstracts.JobSeekerService;
 import kodlamaio.HRMS.business.abstracts.UserService;
+import kodlamaio.HRMS.business.abstracts.VerificationCodeService;
 import kodlamaio.HRMS.core.utilities.adapters.ValidationService;
 import kodlamaio.HRMS.core.utilities.results.ErrorResult;
 import kodlamaio.HRMS.core.utilities.results.Result;
@@ -14,6 +17,7 @@ import kodlamaio.HRMS.core.utilities.results.SuccessResult;
 import kodlamaio.HRMS.core.utilities.verification.VerificationService;
 import kodlamaio.HRMS.entities.concretes.Employer;
 import kodlamaio.HRMS.entities.concretes.JobSeeker;
+import kodlamaio.HRMS.entities.concretes.VerificationCode;
 
 @Service
 public class AuthManager implements AuthService {
@@ -23,19 +27,23 @@ public class AuthManager implements AuthService {
 	private JobSeekerService jobSeekerService;
 	private VerificationService verificationService;
 	private ValidationService validationService;
+ 	private VerificationCodeService verificationCodeService;
 
 	@Autowired
-	public AuthManager(UserService userService, EmployerService employerService, JobSeekerService jobSeekerService, VerificationService verificationService, ValidationService validationService) {
+	public AuthManager(UserService userService, EmployerService employerService,
+			JobSeekerService jobSeekerService, VerificationService verificationService, 
+			ValidationService validationService, VerificationCodeService verificationCodeService) {
 		super();
 		this.userService = userService;
 		this.employerService = employerService;
 		this.jobSeekerService = jobSeekerService;
 		this.verificationService = verificationService;
 		this.validationService = validationService;
+ 		this.verificationCodeService = verificationCodeService;
 	}
 
 	@Override
-	public Result registerEmployer(Employer employer) {
+	public Result registerEmployer(Employer employer, String confirmPassword) {
 
 		if (!checkIfNullInfoForEmployer(employer)) {
 
@@ -52,20 +60,22 @@ public class AuthManager implements AuthService {
 			return new ErrorResult(employer.getEmail() + " already exists.");
 		}
 
-		if (!checkIfEqualPasswordAndConfirmPassword(employer.getPassword(), employer.getConfirmPassword())) {
+		if (!checkIfEqualPasswordAndConfirmPassword(employer.getPassword(), confirmPassword)) {
 
 			return new ErrorResult("Passwords do not match.");
 		}
 
-		verificationService.sendLink(employer.getEmail());
+		//verificationService.sendLink(employer.getEmail());
 		employerService.add(employer);
+		String code = verificationService.sendCode();
+		verificationCodeRecord(code, employer.getId(), employer.getEmail());
 
 		return new SuccessResult("Registration has been successfully completed");
 
 	}
 
 	@Override
-	public Result registerJobSeeker(JobSeeker jobSeeker) {
+	public Result registerJobSeeker(JobSeeker jobSeeker, String confirmPassword) {
 		
 		if (checkIfRealPerson(Long.parseLong(jobSeeker.getNationalId()), jobSeeker.getFirstName(),
 				jobSeeker.getLastName(), jobSeeker.getDateOfBirth().getYear()) == false) {
@@ -74,7 +84,7 @@ public class AuthManager implements AuthService {
 
 
 
-		if (!checkIfNullInfoForJobSeeker(jobSeeker)) {
+		if (!checkIfNullInfoForJobSeeker(jobSeeker, confirmPassword)) {
 
 			return new ErrorResult("You have entered missing information. Please fill in all fields.");
 		}
@@ -89,8 +99,10 @@ public class AuthManager implements AuthService {
 			return new ErrorResult(jobSeeker.getEmail() + " already exists.");
 		}
 		
-		verificationService.sendLink(jobSeeker.getEmail());
+		
 		jobSeekerService.add(jobSeeker);
+		String code = verificationService.sendCode();
+		verificationCodeRecord(code, jobSeeker.getId(), jobSeeker.getEmail());
 		return new SuccessResult("Registration has been successfully completed");
 	}
 
@@ -99,8 +111,7 @@ public class AuthManager implements AuthService {
 	private boolean checkIfNullInfoForEmployer(Employer employer) {
 
 		if (employer.getCompanyName() != null && employer.getWebsite() != null && employer.getEmail() != null
-				&& employer.getPhoneNumber() != null && employer.getPassword() != null
-				&& employer.getConfirmPassword() != null) {
+				&& employer.getPhoneNumber() != null && employer.getPassword() != null) {
 
 			return true;
 
@@ -122,23 +133,14 @@ public class AuthManager implements AuthService {
 	}
 
 
-	private boolean checkIfEqualPasswordAndConfirmPassword(String password, String confirmPassword) {
-
-		if (!password.equals(confirmPassword)) {
-			return false;
-		}
-
-		return true;
-	}
-
 	// Validation for employer register ---END---
 
 	// Validation for jobSeeker register ---START---
-	private boolean checkIfNullInfoForJobSeeker(JobSeeker jobSeeker) {
+	private boolean checkIfNullInfoForJobSeeker(JobSeeker jobSeeker, String confirmPassword) {
 
 		if (jobSeeker.getFirstName() != null && jobSeeker.getLastName() != null && jobSeeker.getNationalId() != null
-				&& jobSeeker.getDateOfBirth() != null && jobSeeker.getPassword() != null
-				&& jobSeeker.getConfirmPassword() != null && jobSeeker.getEmail() != null) {
+				&& jobSeeker.getDateOfBirth() != null && jobSeeker.getPassword() != null && jobSeeker.getEmail() != null
+				&& confirmPassword != null) {
 
 			return true;
 
@@ -176,5 +178,23 @@ public class AuthManager implements AuthService {
 			return true;
 		}
 		return false;
+	}
+	
+
+	private boolean checkIfEqualPasswordAndConfirmPassword(String password, String confirmPassword) {
+
+		if (!password.equals(confirmPassword)) {
+			return false;
+		}
+
+		return true;
+	}
+	
+	private void verificationCodeRecord(String code, int id, String email) {
+
+		VerificationCode verificationCode = new VerificationCode(id, code, false, LocalDate.now());
+		this.verificationCodeService.add(verificationCode);
+		System.out.println("Verification code has been sent to " + email );
+
 	}
 }

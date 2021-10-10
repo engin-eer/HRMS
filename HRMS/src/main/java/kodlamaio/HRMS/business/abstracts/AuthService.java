@@ -6,6 +6,6 @@ import kodlamaio.HRMS.entities.concretes.JobSeeker;
 
 public interface AuthService {
 
-	Result registerEmployer(Employer employer);
-	Result registerJobSeeker(JobSeeker jobSeeker);
+	Result registerEmployer(Employer employer, String confirmPassword);
+	Result registerJobSeeker(JobSeeker jobSeeker, String confirmPassword);
 }
